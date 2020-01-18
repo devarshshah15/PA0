@@ -1,0 +1,92 @@
+Lab0Answers.txt
+
+Name: Devarsh Shah
+Unity ID: 200310992
+
+
+1. Assuming the XINU text begins at address 0x0, draw a rough diagram of XINU's memory layout with addresses derived from your experimental measurements. Include the information you uncovered from running your version of printsegaddress() and printprocstks().
+
+Ans.  
+
+XINU MEMORY LAYOUT
+
+|  Free  | 
+|________|__ base pointer (stack base)= 0x00ffeff8
+|        |
+|        |   stack pointer =0x00ffefa0
+| Stack  |
+|        |   stack size = 4096
+|        |
+|________|__ stack limit = 0x00ffdffc
+|        |
+|  Heap  |
+|        |
+|________|__ ebss = 0x00025198
+|        |
+|  End   |
+|        |
+|________|__ edata = 0x0001f53d
+|  Data  |
+|        |
+|________|__ etext = 0x0001b12b
+|  Text  |
+|        |
+|________|___Start = 0x0
+
+
+2. What is the difference in stack top address before and after calling printtos() ? Draw a diagram to illustrate what are the contents of the items pushed into the stack between these two time points.
+
+Ans.  Values which are stored in return address and the base pointer of main are both pushed onto the stack on calling the printtos() function. 
+ ________
+|        |
+|        |--> after printtos() call = 0x00ffefb8
+|  ebp   |
+|________|
+|        |
+| return |--> before printtos() call = 0x00ffefc0
+| address|    
+|________|
+
+
+3. Which byte order is adopted in the host machine that we are using ? How did you find out ?
+
+Ans. Little Endian
+It can be found using the command: 
+  lscpu | grep Endian
+
+Output of this command:
+  Byte Order: Little Endian
+
+lscpu  gathers  CPU  architecture  information from sysfs and /proc/cpuinfo. The information includes, for example, the number of CPUs, threads,  cores,  sockets,  and  Non-Uniform Memory  Access (NUMA) nodes. There is also information about the CPU caches and cache sharing, family, model, bogoMIPS, byte order, and stepping. It also has an attribute called byte order which stores whether is it big endian or little endian. grep parses the output from lscpu and returns byte order which specifies if it is little endian or big endian.
+
+
+4. Briefly describe the mov, push, pusha, pop, and popa instructions in the x86.
+Ans. 
+
+a) mov: The mov instruction copies the data item referred to by its second operand into the location referred to by its first operand.
+Syntax: mov <a>,<b>  
+where <a> or <b> can be register, memory and constant. 
+
+b) push: This instruction decrements the stack pointer and stores the data specified as the argument into the location pointed to by the stack pointer. It pushes the value of operand on top the stack memory. Firstly, it will decrement the esp (stack pointer) by 4  and then place the operand on memory location at esp. 
+It's syntax is push <a>, where <a> can be memory, 32-bit register or 32-bit constant.
+
+c) pusha: This is push all instruction. This instruction is used when the size of operand is 16. The order in which registers are stored on the stack is - AX, CX, DX, BX, SP (original value), BP, SI, and DI. The value of SP pushed is the value before the instruction is executed. It is useful for saving state before an operation that could potentially change these registers.
+
+d) pop: This instruction loads the data stored in the location pointed to by the stack pointer into the argument specified and then increments the stack pointer. It pops the value from top of memory stack into the operand specified in instruction. Firstly, it moves 4 bytes into the memory location and then increments the value of top of stack by 4.
+It's syntax is pop <a>, where <a> can be register or memory location.
+
+e) popa: This is pop all instruction. This instruction pops all the general purpose registers off the stack in the reverse order of pusha and is used when the size of operand is 16. The registers are loaded in the order -  DI, SI, BP, SP, BX, DX, CX, and AX.
+
+
+5. In a stack frame, local variables are stored below the top of the stack. In task 3, does your result show all the local variables declared in your printtos function? If not, can you explain that? (hint: try to disable the compiler optimization by specifying -O0 in your Makefile)
+Ans.
+The result does not show all the local variables declared in printtos() function. The goal of compiler is to decrease the cost of compilation while ensuring that debugging produce the expected results. So, compiler performs optimization tasks based on its knowledge of the program which is why printtos() function execution doesn't show all the variables. The program does not run and also the compiler optimization is disabled by default without specifying everything in the MakeFile.
+
+
+Links used for reference:
+->https://linux.die.net/man/1/lscpu
+->https://en.wikibooks.org/wiki/X86_Assembly/Other_Instructions
+->https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+->http://www.cs.virginia.edu/~evans/cs216/guides/x86.html 
+->https://www.howtoforge.com/linux-lscpu-command/
+->https://www.systutorials.com/docs/linux/man/1-lscpu/

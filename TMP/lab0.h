@@ -1,0 +1,11 @@
+extern long zfunction (long param);
+extern void printsegaddress(void);
+extern void printtos(void);
+extern void printprocstks(int priority);
+extern int syscall_track;
+unsigned long ctr1000;
+extern int frequency_call[NPROC][27];
+extern int time_call[NPROC][27];
+void syscallsummary_start(void);
+void syscallsummary_stop(void);
+extern void printsyscallsummary(void);
